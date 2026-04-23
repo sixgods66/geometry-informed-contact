@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Geometry-Informed Contact Modeling and Optimization for Efficient Contact-Rich Manipulation.">
+  <meta name="keywords" content="Contact-Rich Manipulation, MPC, Riemannian Metric, Compliant Contact, Robotics">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GIC: Geometry-Informed Contact Modeling</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <style>
+    /* 轻微覆盖,让视频和图片统一美观 */
+    .video-tile video { width: 100%; border-radius: 6px; background: #000; }
+    .method-figure { width: 100%; border-radius: 4px; }
+    .fig-caption { font-size: 0.9em; color: #666; margin-top: 6px; text-align: center; }
+    .table-figure { width: 100%; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    /* 小节标题的间距 */
+    .subsection-title { margin-top: 30px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+
+<!-- ============================ Hero: Title + Authors + Links ============================ -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Geometry-Informed Contact Modeling<br>
+            and Optimization for Efficient Contact-Rich Manipulation
+          </h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><em>Anonymous Authors</em></span>
+          </div>
+
+          <div class="is-size-6 publication-authors" style="margin-top: 6px;">
+            <span class="author-block">Under review at <em>IEEE Robotics and Automation Letters</em></span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Paper (placeholder during anonymous review) -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper (coming soon)</span>
+                </a>
+              </span>
+              <!-- Jump to videos anchor -->
+              <span class="link-block">
+                <a href="#simulation-results"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-video"></i></span>
+                  <span>Videos</span>
+                </a>
+              </span>
+              <!-- Code (placeholder) -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code (coming soon)</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Abstract ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Contact-rich manipulation remains a paramount challenge in robotics due to
+            the hybrid dynamics and nonsmooth nature of making and breaking contacts.
+            We present a <b>geometry-informed contact (GIC)</b> modeling and optimization
+            approach that encodes the friction-cone geometry and object geometry directly
+            within an energy-consistent compliant contact model.
+          </p>
+          <p>
+            At each contact, an anisotropic Riemannian metric shapes the contact energy
+            so that the resulting compliant force is <b>geometrically consistent with the
+            friction cone</b>, while a geometry-aware modulation biases contacts toward
+            mechanically robust regions. This yields smooth, complementarity-free contact
+            dynamics, enabling an efficient <b>contact-implicit MPC</b> formulation for
+            contact-rich manipulation.
+          </p>
+          <p>
+            The proposed GIC and MPC formulation is evaluated on several dexterous
+            manipulation tasks with diverse contact numbers, initial configurations, and
+            task dimensionality in both simulation and real-world experiments, achieving
+            higher success rates and lower pose errors with less computation time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Method Overview (framework.png) ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method Overview</h2>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <img src="./static/fig/framework.png" alt="GIC framework" class="method-figure">
+        <p class="fig-caption">
+          A dual-arm robot performs initial contact, contact search, and stable manipulation on an object.
+          A geometry-aware metric highlights favorable surface regions, a geometry-informed energy-consistent
+          contact model generates compliant contact forces, and an MPC controller optimizes tracking and
+          control effort for efficient multi-contact manipulation.
+        </p>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="margin-top: 18px;">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>The framework has three tightly coupled components:</p>
+          <ol>
+            <li>
+              <b>Friction-cone-aligned anisotropic metric.</b> A SPD metric
+              <em>M<sup>c</sup><sub>&delta;,i</sub> = diag(1, &mu;<sup>2</sup>, &mu;<sup>2</sup>)</em>
+              reshapes the contact energy so its level sets align with the Coulomb cone.
+              In metric-normalized coordinates, the friction cone becomes a unit cone.
+            </li>
+            <li>
+              <b>Geometry-informed modulation.</b> Local surface curvature is encoded
+              into the same metric, biasing contact placement toward mechanically robust
+              regions&mdash;while leaving the physical friction coefficient unchanged.
+            </li>
+            <li>
+              <b>Contact-implicit MPC.</b> The resulting compliant dynamics admit a
+              closed-form, differentiable time-stepping rule, integrated into a real-time
+              MPC framework for joint contact selection and control.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Friction-Cone-Aligned Metric (白底,上下排列,force 图更小) ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Friction-Cone-Aligned Anisotropic Metric</h2>
+        <div class="content has-text-justified">
+          <p>
+            We choose the anisotropic metric so that the energy ellipsoid's
+            tangential-to-normal axis ratio exactly matches the Coulomb coefficient
+            <em>&mu;</em>. This makes the compliant force <em>cone-consistent by construction</em>,
+            without any explicit friction-cone inequality.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第一张图:能量景观对比 (竖向堆叠双面板,保持较宽) -->
+    <div class="columns is-centered">
+      <div class="column is-three-quarters">
+        <img src="./static/fig/metric_energy.png" alt="Energy landscape comparison" class="method-figure">
+        <p class="fig-caption">
+          Elastic energy and gradient flow in displacement space. <em>Top:</em>
+          isotropic metric&mdash;circular level sets that ignore the friction cone.
+          <em>Bottom:</em> anisotropic metric&mdash;energy ellipses align with the cone,
+          pulling iterates toward cone-consistent directions.
+        </p>
+      </div>
+    </div>
+
+    <!-- 第二张图:归一化坐标流线 (单面板,更窄以匹配视觉高度) -->
+    <div class="columns is-centered" style="margin-top: 24px;">
+      <div class="column is-half">
+        <img src="./static/fig/metric_force.png" alt="Metric-normalized force field" class="method-figure">
+        <p class="fig-caption">
+          Metric-normalized elastic force streamlines. After the metric transformation,
+          the Coulomb cone becomes a unit cone (dashed lines), and contact forces
+          naturally remain inside it.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Geometry-Informed Modulation (geo.png) ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Geometry-Informed Metric Modulation</h2>
+        <div class="content has-text-justified">
+          <p>
+            A curvature-dependent modulation further biases contact selection toward
+            gently curved regions. Edges and corners concentrate stress and are sensitive
+            to pose error; flatter regions are more robust. This is a <em>modeling choice
+            that regularizes the MPC optimization</em>&mdash;the physical friction coefficient
+            <em>&mu;</em> remains uniform across the surface.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <img src="./static/fig/geo.png" alt="Geometry-aware metric on canonical shapes" class="method-figure">
+        <p class="fig-caption">
+          Geometry-aware metric visualized on three canonical shapes (cube, ellipsoid, cylinder).
+          Blue = low geometric penalty (preferred for stable contact);
+          red = high penalty (sharp edges and highly curved regions, discouraged).
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Simulation Results (白底大节,两小节) ============================ -->
+<section class="section" id="simulation-results">
+  <div class="container is-max-desktop">
+
+    <!-- 大节标题 -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Simulation Results</h2>
+      </div>
+    </div>
+
+    <!-- ==================== Subsection 1: Different Contact Points ==================== -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4 subsection-title">Transfer to Different Contact Points</h3>
+        <div class="content has-text-justified">
+          <p>
+            We first evaluate GIC on a wooden cube under diverse contact numbers and
+            task dimensionality, using identical controller parameters throughout
+            (<em>&mu;</em> = 0.5, <em>&Delta;t</em> = 0.1 s, prediction horizon <em>K</em> = 10).
+            Planar tasks (2&amp;P, 3&amp;P) require a single rotation about the vertical
+            axis; spatial tasks (2&amp;S, 3&amp;S) additionally require lift and tilt.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 1: 2-contact planar / spatial -->
+    <div class="columns">
+      <div class="column video-tile">
+        <h4 class="title is-5 has-text-centered">2 Contacts &middot; Planar (2&amp;P)</h4>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/sim_2p.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Planar reorientation about the vertical axis with two contacts.</p>
+      </div>
+      <div class="column video-tile">
+        <h4 class="title is-5 has-text-centered">2 Contacts &middot; Spatial (2&amp;S)</h4>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/sim_2s.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Spatial reorientation with out-of-plane motion and two contacts.</p>
+      </div>
+    </div>
+
+    <!-- Row 2: 3-contact planar / spatial -->
+    <div class="columns">
+      <div class="column video-tile">
+        <h4 class="title is-5 has-text-centered">3 Contacts &middot; Planar (3&amp;P)</h4>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/sim_3p.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Over-actuated planar reorientation with three contacts.</p>
+      </div>
+      <div class="column video-tile">
+        <h4 class="title is-5 has-text-centered">3 Contacts &middot; Spatial (3&amp;S)</h4>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/sim_3s.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Spatial reorientation requiring lift and tilt with three contacts.</p>
+      </div>
+    </div>
+
+    <!-- Table I -->
+    <div class="columns is-centered" style="margin-top: 30px;">
+      <div class="column is-four-fifths">
+        <img src="./static/fig/table_1.png" alt="Table I: Performance comparison" class="table-figure">
+        <p class="fig-caption">
+          <b>Table I.</b> Performance comparison on multi-contact manipulation tasks.
+          SR: success rate. Time: average MPC solve time. Pos and Ori: terminal errors.
+        </p>
+      </div>
+    </div>
+
+    <!-- Table I 下面的简短结果说明 -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            GIC achieves <b>100% success on 2&amp;P</b> and <b>90&ndash;95%</b> on the
+            remaining tasks, with terminal position errors below 0.85 cm and orientation
+            errors on the order of 0.001 rad, all within <b>13&ndash;16 ms</b> of MPC solve
+            time. MPCC suffers from solver timeout on spatial tasks (success below 40%),
+            while CFM degrades notably on spatial cases (60% on 2&amp;S, 70% on 3&amp;S).
+            The w/o Geom ablation shows that curvature guidance is most critical when
+            the contact count is limited.
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==================== Subsection 2: Different Objects ==================== -->
+    <div class="columns is-centered has-text-centered" style="margin-top: 50px;">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4 subsection-title">Transfer to Different Objects</h3>
+        <div class="content has-text-justified">
+          <p>
+            We next test how the geometry-aware metric transfers across object shapes.
+            The same GIC and MPC pipeline extends directly to new objects without
+            additional tuning&mdash;only the body-frame geometric metric is updated based
+            on a simple primitive approximation (cylinder for the plastic bottle,
+            oblate ellipsoid for the metal bowl).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Object video -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths video-tile">
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/object.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">
+          Planar two-contact manipulation of a plastic bottle and a metal bowl.
+          The controller places contacts on the cylindrical body and the outer wall,
+          avoiding the high-curvature shoulder and rim highlighted by the geometry-aware metric.
+        </p>
+      </div>
+    </div>
+
+    <!-- Table II -->
+    <div class="columns is-centered" style="margin-top: 24px;">
+      <div class="column is-three-quarters">
+        <img src="./static/fig/table_2.png" alt="Table II: Different objects results" class="table-figure">
+        <p class="fig-caption">
+          <b>Table II.</b> Performance on the two object-variation tasks over 20 randomized trials each.
+        </p>
+      </div>
+    </div>
+
+    <!-- Table II 下面的简短结果说明 -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            GIC achieves <b>90% success on the bottle</b> and <b>95% on the bowl</b>,
+            with terminal position errors around 0.7 cm and orientation errors below
+            0.003 rad, while maintaining MPC solving times below 14 ms on average.
+            Qualitatively, the controller avoids the high-curvature shoulder of the
+            bottle and the rim of the bowl, confirming that once the geometric metric
+            is defined from a simple primitive, the pipeline transfers to new objects
+            without retuning.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================ Real-World Bimanual Experiments (白底) ============================ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Real-World Bimanual Experiments</h2>
+        <div class="content has-text-justified">
+          <p>
+            A dual-arm robot manipulates a cardboard box on a table. Each parallel-jaw
+            gripper (closed) acts as a single point contact on a box face. The MPC runs
+            at 10 Hz with the same parameters as in simulation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column video-tile">
+        <h3 class="title is-5 has-text-centered">Config 1 &middot; Same Face</h3>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/real_1.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Both grippers contact the same side face of the box.</p>
+      </div>
+      <div class="column video-tile">
+        <h3 class="title is-5 has-text-centered">Config 2 &middot; Adjacent Faces</h3>
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/real_2.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">Grippers on adjacent faces, giving asymmetric wrench authority.</p>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="margin-top: 18px;">
+      <div class="column is-four-fifths">
+        <div class="content has-text-centered">
+          <p>
+            Terminal position error &lt; <b>1.5 cm</b> and orientation error &lt; <b>0.01 rad</b>
+            across trials. By encoding friction anisotropy and local curvature in the
+            contact metric, the controller naturally biases contact usage away from edges
+            and corners toward broader, mechanically robust patches on the face&mdash;enabling
+            reliable plane pushing and rotation without explicit contact-switching heuristics.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Citation (浅灰色作为收尾区分) ============================ -->
+<section class="hero is-light is-small" id="BibTeX">
+  <div class="hero-body">
+    <div class="container is-max-desktop content">
+      <h2 class="title">Citation</h2>
+      <pre><code>@article{gic_anonymous_2026,
+  title   = {Geometry-Informed Contact Modeling and Optimization
+             for Efficient Contact-Rich Manipulation},
+  author  = {Anonymous Authors},
+  journal = {Under review at IEEE Robotics and Automation Letters},
+  year    = {2026}
+}</code></pre>
+      <p style="font-size: 0.9em; color: #666; margin-top: 6px;">
+        The BibTeX entry will be updated once the paper is accepted.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================ Footer ============================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Template adapted from the
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies project page</a>.
+          </p>
+          <p style="font-size: 0.85em; color: #888;">
+            This page is provided for double-blind review purposes and contains no
+            identifying author information.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
