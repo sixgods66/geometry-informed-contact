@@ -414,9 +414,27 @@
         <h2 class="title is-3">Real-World Bimanual Experiments</h2>
         <div class="content has-text-justified">
           <p>
-            A dual-arm robot manipulates a cardboard box on a table. Each parallel-jaw
-            gripper (closed) acts as a single point contact on a box face. The MPC runs
-            at 10 Hz with the same parameters as in simulation.
+            We deploy GIC-MPC on an ARX R5 dual-arm robot manipulating a cardboard box on a table.
+            Each parallel-jaw gripper (closed) acts as a single point contact on a box face. The MPC
+            runs at 10 Hz with the same prediction horizon and cost structure as in simulation.
+            We evaluate two task families that mirror the simulation study:
+            planar pushing and rotation (<b>2&amp;P</b>), and spatial flipping (<b>2&amp;S</b>).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== Subsection 1: 2&P Planar Pushing & Rotation ==================== -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4 subsection-title">Planar Pushing &amp; Rotation (2&amp;P)</h3>
+        <div class="content has-text-justified">
+          <p>
+            The arms push and rotate the box to a target pose in the plane under two distinct
+            initial contact configurations&mdash;both grippers on the same face, and grippers on
+            adjacent faces. The friction- and curvature-aware metric pulls the controller away
+            from edges and corners toward broader, mechanically robust patches on the face,
+            yielding reliable rotation without any explicit contact-switching heuristic.
           </p>
         </div>
       </div>
@@ -424,14 +442,14 @@
 
     <div class="columns">
       <div class="column video-tile">
-        <h3 class="title is-5 has-text-centered">Config 1 &middot; Same Face</h3>
+        <h4 class="title is-5 has-text-centered">Config 1 &middot; Same Face</h4>
         <video autoplay muted loop playsinline>
           <source src="./static/video/real_1.mp4" type="video/mp4">
         </video>
         <p class="fig-caption">Both grippers contact the same side face of the box.</p>
       </div>
       <div class="column video-tile">
-        <h3 class="title is-5 has-text-centered">Config 2 &middot; Adjacent Faces</h3>
+        <h4 class="title is-5 has-text-centered">Config 2 &middot; Adjacent Faces</h4>
         <video autoplay muted loop playsinline>
           <source src="./static/video/real_2.mp4" type="video/mp4">
         </video>
@@ -439,15 +457,46 @@
       </div>
     </div>
 
+    <!-- ==================== Subsection 2: 2&S Spatial Flipping ==================== -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h3 class="title is-4 subsection-title">Spatial Flipping (2&amp;S)</h3>
+        <div class="content has-text-justified">
+          <p>
+            The arms flip the box about a horizontal axis. To rotate the box out of plane, each
+            contact must simultaneously support the weight against gravity and provide tangential
+            force along the pitch axis, operating close to the friction-cone boundary on the lateral
+            faces. Here the cone-alignment built into the friction metric matters most directly: the
+            anisotropic metric keeps the optimized forces inside the admissible region throughout the
+            maneuver, while the curvature modulation continues to draw contacts away from the edges
+            as the orientation evolves.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-two-thirds video-tile">
+        <video autoplay muted loop playsinline>
+          <source src="./static/video/flipping.mp4" type="video/mp4">
+        </video>
+        <p class="fig-caption">
+          Out-of-plane flipping with two contacts on the lateral faces. The compliant contact
+          forces remain cone-consistent throughout the spatial reorientation.
+        </p>
+      </div>
+    </div>
+
+    <!-- ==================== Concluding remarks ==================== -->
     <div class="columns is-centered" style="margin-top: 18px;">
       <div class="column is-four-fifths">
         <div class="content has-text-centered">
           <p>
-            Terminal position error &lt; <b>1.5 cm</b> and orientation error &lt; <b>0.01 rad</b>
-            across trials. By encoding friction anisotropy and local curvature in the
-            contact metric, the controller naturally biases contact usage away from edges
-            and corners toward broader, mechanically robust patches on the face&mdash;enabling
-            reliable plane pushing and rotation without explicit contact-switching heuristics.
+            Across all 2&amp;P and 2&amp;S trials, the arms maintain stable multi-contact interaction
+            and reach the target pose with terminal position error &lt; <b>1.5 cm</b> and orientation
+            error &lt; <b>0.01 rad</b>. The proposed GIC-MPC thus transfers from simulation to hardware
+            and handles both planar pushing and spatial reorientation under varying multi-contact
+            configurations.
           </p>
         </div>
       </div>
